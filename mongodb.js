@@ -194,3 +194,7 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
 // we can convert it into string 
 // new ObjectID().toHexString()
 // the length is 24
+
+
+// Promises are enhanced call back calls, making it easier for asynchronous code
+// check for 8-promises.js in playground app
