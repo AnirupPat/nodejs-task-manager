@@ -92,6 +92,82 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
     // })
 
     // ------- new set of code----------
+    // // findOne will fetch always one document.. 
+    // // if there are more than one document, then it will return the first one
+    // db.collection('users').findOne({ name: 'Anirup' }, (error, user) => {
+    //     if(error) {
+    //         return console.log('Unable to fetch !')
+    //     }
+
+    //     console.log(user)
+    // })
+
+    // ------- new set of code----------
+
+    // // searching for a document and not finding it is not an error
+    // // its null
+    // db.collection('users').findOne({ name: 'Anirup', age: 1 }, (error, user) => {
+    //     if(error) {
+    //         return console.log('Unable to fetch !')
+    //     }
+
+    //     console.log(user)
+    // })
+
+    // // ------- new set of code----------
+    // // this will return null as GUID that we are passing is in string format 
+    // db.collection('users').findOne({ _id: "5e9a6435223503391210e1bb" }, (error, user) => {
+    //     if(error) {
+    //         return console.log('Unable to fetch !')
+    //     }
+
+    //     console.log(user)
+    // })
+
+    // ------- new set of code----------
+    // // this will return null as GUID that we are passing is in string format 
+    // db.collection('users').findOne({ _id: new ObjectID("5e9a6435223503391210e1bb") }, (error, user) => {
+    //     if(error) {
+    //         return console.log('Unable to fetch !')
+    //     }
+
+    //     console.log(user)
+    // })
+
+    // ------- new set of code----------
+    // // find doesnt have calback function
+    // db.collection('users').find({ age: 28 }).toArray((error, users) => {
+    //     if(error) {
+    //         return console.log('Unable to find !')
+    //     }
+
+    //     console.log(users)
+    // })
+
+    // db.collection('users').find({ age: 28 }).count((error, count) => {
+    //     if(error) {
+    //         return console.log('Unable to find !')
+    //     }
+
+    //     console.log(count)
+    // })
+
+    // ------- new set of code----------
+    // Use find and findOne with tasks collections
+    // Use findOne to fetch the last task by its id( print doc in console )
+    // Use find to fetch all tasks that are not completed
+
+    db.collection('tasks').findOne({ _id: new ObjectID("5e9a6ce9d6c00d3a470b813d") }, (error, task) => {
+        console.log(task)
+    })
+
+    db.collection('tasks').find({ completed: false }).toArray((error, tasks) => {
+        if(error) {
+            return console.log('Unable to fetch from tasks collection!')
+        }
+
+        console.log(tasks)
+    })
 
 
 })
