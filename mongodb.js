@@ -153,22 +153,103 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
     // })
 
     // ------- new set of code----------
-    // Use find and findOne with tasks collections
-    // Use findOne to fetch the last task by its id( print doc in console )
-    // Use find to fetch all tasks that are not completed
+    // // Use find and findOne with tasks collections
+    // // Use findOne to fetch the last task by its id( print doc in console )
+    // // Use find to fetch all tasks that are not completed
 
-    db.collection('tasks').findOne({ _id: new ObjectID("5e9a6ce9d6c00d3a470b813d") }, (error, task) => {
-        console.log(task)
+    // db.collection('tasks').findOne({ _id: new ObjectID("5e9a6ce9d6c00d3a470b813d") }, (error, task) => {
+    //     console.log(task)
+    // })
+
+    // db.collection('tasks').find({ completed: false }).toArray((error, tasks) => {
+    //     if(error) {
+    //         return console.log('Unable to fetch from tasks collection!')
+    //     }
+
+    //     console.log(tasks)
+    // })
+
+    // -------new set of code--------
+    // const updatePromise = db.collection('tasks').updateOne(
+    //     { 
+    //     _id: new ObjectID("5e9a6ce9d6c00d3a470b813f") 
+    //     }, 
+    //     {
+    //         $set: {
+    //             completed: true
+    //         }
+    //     }
+    // )
+
+    // updatePromise.then((result) => {
+    //     console.log('Result is:', result)
+    // }).catch((error) => {
+    //     console.log('Error occurred :', error)
+    // })
+
+    // ------ another way of writting promises with out constants
+    // db.collection('tasks').updateOne(
+    //     { 
+    //     _id: new ObjectID("5e9a6ce9d6c00d3a470b813f") 
+    //     }, 
+    //     {
+    //         $set: {
+    //             completed: true
+    //         }
+    //     }
+    // ).then((result) => {
+    //     console.log('Result is:', result)
+    // }).catch((error) => {
+    //     console.log('Error occurred :', error)
+    // })
+
+    // -------new set of code--------
+
+    // db.collection('users').updateOne(
+    //     { 
+    //     _id: new ObjectID("5e9a6435223503391210e1bb") 
+    //     }, 
+    //     {
+    //         $inc: {
+    //             age: 1 // to increment the age by one, using inc operator
+    //         }
+    //     }
+    // ).then((result) => {
+    //     console.log('Result is:', result)
+    // }).catch((error) => {
+    //     console.log('Error occurred :', error)
+    // })
+
+    // -------new set of code--------
+
+    // // Use updateMany by viewing documentry
+    // // set up the call with the query and updates
+    // // use promise method to set up success/error handlers
+
+    // db.collection('tasks').updateMany(
+    //     { completed: true },
+    //     {
+    //         $set: {
+    //             completed: false
+    //         }
+    //     }
+    // ).then((result) => {
+    //     console.log('Success:', result)
+    // }).catch((error) => {
+    //     console.log('Error:', error)
+    // })
+
+    // -------new set of code--------
+
+    db.collection('users').deleteMany({
+        age: 27
+    }).then((result) => {
+        console.log('Success:', result)
+    }).catch((error) => {
+        console.log('Error:', error)
     })
 
-    db.collection('tasks').find({ completed: false }).toArray((error, tasks) => {
-        if(error) {
-            return console.log('Unable to fetch from tasks collection!')
-        }
-
-        console.log(tasks)
-    })
-
+    // Same is with the case of deleteOne.. 
 
 })
 
