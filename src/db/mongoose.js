@@ -3,7 +3,9 @@ const mongoose = require('mongoose')
 // task-manager-api is a new db that we are creating with mongoose
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false // we write this cause we were getting some 
+    // unnecessary warning !
 })
 
 // Add a password field 
