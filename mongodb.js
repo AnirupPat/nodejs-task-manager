@@ -279,3 +279,14 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
 
 // Promises are enhanced call back calls, making it easier for asynchronous code
 // check for 8-promises.js in playground app
+
+// Mongoose is a very popular npm module
+// It is directly related to mongoDb
+// used for validation of document (required, field type etc.)
+// mongoosejs.com 
+// Mongoose fall into a broader category of tools known as ODM
+// Object Document Mapper
+// npm i mongoose@5.3.16
+
+
+
