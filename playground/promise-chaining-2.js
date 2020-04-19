@@ -13,3 +13,5 @@ Task.findByIdAndDelete('5e9bd8653df7574894e2fd76').then((res) => {
 }).catch((e) => {
     console.log(e)
 })
+
+// async await is a small set of tool that makes work with promises easier
