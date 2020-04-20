@@ -2,10 +2,6 @@ const express = require('express')
 const router = new express.Router()
 const User = require('../models/user')
 
-router.get('/test', (req, res) => {
-    res.send('This is a test route !')
-})
-
 // here we are trying to separate the user routes
 // have done it for one , but the remaining ones are still there in index.js 
 // so as to get clarity of whats happenning 
