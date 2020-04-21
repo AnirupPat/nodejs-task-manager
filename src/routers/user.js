@@ -83,7 +83,15 @@ router.patch('/users/:id', async(req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        // the findByIdAndUpdate function by passes Mongoose. It performs
+        // a direct operation on the database
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
+        const user = await User.findById(req.params.id)
+
+        updates.forEach((update) => user[update] = req.body[update])
+        await user.save()
+
         if(!user) {
             return res.status(404).send()
         }
@@ -103,6 +111,16 @@ router.delete('/users/:id', async (req, res) => {
         res.send(user)
     }   catch(e) {
         res.status(400).send(e)
+    }
+})
+
+router.post('/users/login', async(req, res) => {
+    try {
+        // this function is defined as a part of schema
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        res.send(user)
+    } catch(e) {
+        res.status(400).send()
     }
 })
 

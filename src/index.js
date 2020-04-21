@@ -1,7 +1,5 @@
 const express = require('express')
 require('./db/mongoose') // to connect to mongoose 
-const User = require('./models/user')
-const Task = require('./models/task')
 const userRouter = require('./routers/user')
 const taskRouter = require('./routers/task')
 
@@ -30,3 +28,19 @@ app.listen(port, () => {
 })
 
 // npm i bcryptjs@2.4.3;2
+
+const bcrypt = require('bcryptjs')
+const myFunction = async () => {
+    const password = 'Anirup'
+    const hashedPassword = await bcrypt.hash(password, 8)
+
+    // these bcrypt algorithms are one way, it cant be reversed
+
+    console.log(password)
+    console.log(hashedPassword)
+
+    const isMatch = await bcrypt.compare('Anirup', hashedPassword) // this will return true
+    console.log(isMatch)
+}
+
+myFunction()

@@ -75,6 +75,11 @@ router.get('/tasks/:id', async (req, res) => {
 // - Handle validation error
 // - Handle success
 
+// Change how tasks are updated
+// Find the task
+// Alter the task properties
+// Save the task
+
 router.patch('/tasks/:id', async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedObjects = ["completed", "description"]
@@ -84,7 +89,10 @@ router.patch('/tasks/:id', async (req, res) => {
         return res.status(400).send({error: 'Invalid updates !' })
     }
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+       // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+       const task = await Task.findById(req.params.id)
+       updates.forEach((update) => task[update] = req.body[update])
+       await task.save()
         if(!task) {
             return res.status(404).send()
         }
