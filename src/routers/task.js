@@ -1,11 +1,17 @@
 const express = require('express')
 const router = new express.Router()
 const Task = require('../models/task')
+const auth = require('../middleware/auth')
 
-router.post('/tasks', async (req, res) => {
+router.post('/tasks', auth, async (req, res) => {
     console.log(req.body)
+    //  const task =  new Task(req.body)
+    const task = await new Task({
+        ...req.body,
+        owner: req.user._id
+    })
+    
     try {
-        const task = await new Task(req.body)
         await task.save()
         res.status(201).send(task)
     } catch(e) {
@@ -27,9 +33,12 @@ router.post('/tasks', async (req, res) => {
 // Create an endpoint for fetching all tasks
 // Create an endpoint for fetching a task by its id
 
-router.get('/tasks', async (req, res) => {
+router.get('/tasks', auth, async (req, res) => {
     try {
-        const task = await Task.find({})
+        const task = await Task.findOne({ owner: req.user._id })
+        if(!task) {
+            return res.status(404).send()
+        }
         res.send(task)
     } catch(e) {
         res.status(400).send(e)
@@ -42,11 +51,12 @@ router.get('/tasks', async (req, res) => {
     // })
 })
 
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', auth, async (req, res) => {
     console.log(req.params)
     const _id  = req.params.id
     try {
-        const task = await Task.findById(_id)
+       // const task = await Task.findById(_id)
+       const task = await Task.findOne({ _id, owner: req.user._id })
         if(!task) {
             return res.status(404).send()
         }
@@ -80,7 +90,7 @@ router.get('/tasks/:id', async (req, res) => {
 // Alter the task properties
 // Save the task
 
-router.patch('/tasks/:id', async (req, res) => {
+router.patch('/tasks/:id', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedObjects = ["completed", "description"]
     const isValidOperation = updates.every((update) => allowedObjects.includes(update))
@@ -90,13 +100,15 @@ router.patch('/tasks/:id', async (req, res) => {
     }
     try {
        // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-       const task = await Task.findById(req.params.id)
-       updates.forEach((update) => task[update] = req.body[update])
-       await task.save()
+    //    const task = await Task.findById(req.params.id)
+       const task = await Task.findOne({ _id: req.params.id, owner: req.user._id })
+    
         if(!task) {
             return res.status(404).send()
         }
 
+        updates.forEach((update) => task[update] = req.body[update])
+        await task.save()
         res.send(task)
     } catch(e) {
         res.status(400).send()
@@ -104,9 +116,10 @@ router.patch('/tasks/:id', async (req, res) => {
 })
 
 
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', auth, async (req, res) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id)
+      //  const task = await Task.findByIdAndDelete(req.params.id)
+      const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
         if(!task) {
             return res.status(404).send()
         }

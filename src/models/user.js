@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const Task = require('./task')
 // we do this schema to hash the password   
 const userSchema = new mongoose.Schema({
     name: {
@@ -40,8 +42,53 @@ const userSchema = new mongoose.Schema({
                 // for complex validations, use npm i validator
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 })
+
+userSchema.methods.generateAuthToken = async function() {
+    const user = this
+
+    const token = jwt.sign({ _id: user._id.toString() }, 'secretkey')
+
+    user.tokens = user.tokens.concat({ token })
+    await user.save() // to save the token
+    return token
+}
+
+userSchema.virtual('tasks', {
+    ref: 'Tasks',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
+// userSchema.methods.getPublicProfile = function() {
+//     const user = this
+//     const userObj = user.toObject()
+
+//     delete userObj.password
+//     delete userObj.tokens
+
+//     return userObj
+// }
+
+// we can use the toJSON function to get this at a higher level.. without changing
+// the routes
+
+userSchema.methods.toJSON = function() {
+    const user = this
+    const userObj = user.toObject()
+
+    delete userObj.password
+    delete userObj.tokens
+
+    return userObj
+}
 
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email })
@@ -68,7 +115,13 @@ userSchema.pre('save', async function(next) {
     }
     next()
     // its very important that next gets called, otherwise we can never save the user
-}) 
+})
+
+userSchema.pre('remove', async function(next) {
+    const user = this
+    await Task.deleteMany({ owner: user._id })
+    next()
+})
 
 const User = mongoose.model('User', userSchema)
 
