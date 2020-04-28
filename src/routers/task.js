@@ -33,13 +33,37 @@ router.post('/tasks', auth, async (req, res) => {
 // Create an endpoint for fetching all tasks
 // Create an endpoint for fetching a task by its id
 
+// GET /tasks?completed=true
+// GET /tasks?limit=10&skip=10
+// GET /tasks?sortBy=createdAt:desc
 router.get('/tasks', auth, async (req, res) => {
+    const match = {}
+    const sort = {}
+
+    if(req.query.completed) {
+        match.completed = req.query.completed === 'true' ? true : false
+    }
+
+    if(req.query.sortBy) {
+        const parts = req.query.sortBy.split(':')
+        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+    }
+
     try {
-        const task = await Task.findOne({ owner: req.user._id })
-        if(!task) {
-            return res.status(404).send()
-        }
-        res.send(task)
+        // const task = await Task.findOne({ owner: req.user._id })
+        // if(!task) {
+        //     return res.status(404).send()
+        // }
+        await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip:  parseInt(req.query.skip),
+                sort
+            }
+        }).execPopulate()
+        res.send(req.user.tasks)
     } catch(e) {
         res.status(400).send(e)
     }
