@@ -1,4 +1,5 @@
 const express = require('express')
+const sharp = require('sharp')
 const router = new express.Router()
 const auth = require('../middleware/auth')
 const User = require('../models/user')
@@ -161,13 +162,63 @@ router.post('/users/logoutAll', auth, async(req, res) => {
 
 const multer = require('multer')
 const upload = multer({
-    dest: 'avatars'
+  //  dest: 'avatars',
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Undefined file type !'))
+        }
+
+        cb(undefined, true)
+    }
 })
 
-router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
+router.post('/users/me/avatar', auth , upload.single('avatar'), async (req, res) => {
     // the key that we specify in the upload.single(), is used in the body -> form data 
     // key in postman 
+
+    const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
+    req.user.avatar = buffer
+    // req.user.avatar = req.file.buffer
+    await req.user.save()
     res.send()
+}, (error, req, res, next) => {
+    res.status(404).send({ error: error.message })
 })
+
+// Add validation to avatar upload route
+// Limit the upload sixe to 1 MB
+// Only allow jpg, jpeg, png
+
+// Set up route to delete handler
+// set up DELETE /users/me/avatar
+// Add authentication
+// Set the field to undefined and save the user sending back a 200
+
+router.delete('/users/me/avatar', auth, upload.single('avatar') , async (req, res) => {
+    req.user.avatar = undefined
+    await req.user.save()
+    res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if(!user || !user.avatar) {
+            throw new Error()
+        }
+
+        res.set('Content-Type', 'image/png')
+        res.send(user.avatar)
+    } catch(e) {
+        res.status(404).send()
+    }
+})
+
 
 module.exports = router
