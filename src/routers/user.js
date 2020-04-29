@@ -154,4 +154,20 @@ router.post('/users/logoutAll', auth, async(req, res) => {
     }
 })
 
+// Add POST /users/me/avatar to user router
+// Setup multer to store avatar in the avatars directory
+// Choose name "avatar" for the key when registering the middleware
+// Send back a 200 response from the route handler
+
+const multer = require('multer')
+const upload = multer({
+    dest: 'avatars'
+})
+
+router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
+    // the key that we specify in the upload.single(), is used in the body -> form data 
+    // key in postman 
+    res.send()
+})
+
 module.exports = router
